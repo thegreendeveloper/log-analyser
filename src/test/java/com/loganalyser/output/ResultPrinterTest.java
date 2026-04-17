@@ -114,11 +114,13 @@ class ResultPrinterTest {
 
     @Test
     void print_urlTieNote_appearsWhenTied() {
-        AnalysisResult result = new AnalysisResult(1, new RankedList(List.of(), true), emptyList());
+        AnalysisResult result = new AnalysisResult(1,
+                new RankedList(List.of(new RankedEntry(1, "/page/", 1)), true),
+                emptyList());
 
         printer.print(result);
 
-        assertTrue(outBytes.toString().contains("tie"));
+        assertTrue(outBytes.toString().contains("tie from position"));
     }
 
     @Test
@@ -134,11 +136,28 @@ class ResultPrinterTest {
 
     @Test
     void print_ipTieNote_appearsWhenTied() {
-        AnalysisResult result = new AnalysisResult(1, emptyList(), new RankedList(List.of(), true));
+        AnalysisResult result = new AnalysisResult(1,
+                emptyList(),
+                new RankedList(List.of(new RankedEntry(1, "1.2.3.4", 1)), true));
 
         printer.print(result);
 
-        assertTrue(outBytes.toString().contains("tie"));
+        assertTrue(outBytes.toString().contains("tie from position"));
+    }
+
+    @Test
+    void print_tieNote_reportsCorrectStartPosition() {
+        AnalysisResult result = new AnalysisResult(1,
+                new RankedList(List.of(
+                        new RankedEntry(1, "/a/", 5),
+                        new RankedEntry(2, "/b/", 1),
+                        new RankedEntry(3, "/c/", 1)
+                ), true),
+                emptyList());
+
+        printer.print(result);
+
+        assertTrue(outBytes.toString().contains("tie from position 2"));
     }
 
     @Test

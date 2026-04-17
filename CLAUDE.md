@@ -85,6 +85,12 @@ a well-named method instead.
 If a loop body does more than one thing, or if naming what it does would add clarity, extract it. The method name
 becomes the documentation.
 
+**Extract stream operations into named methods**
+Every non-trivial stream pipeline must be extracted into a private method whose name describes what it produces, not
+how it produces it. A method named `countBy`, `sortDescending`, or `topRanked` is self-documenting; an inline chain
+of `groupingBy`, `sorted`, and `limit` calls is not. The rule applies to lambdas too: if a lambda body is more than
+a single expression, extract it into a named method and pass a method reference instead.
+
 **No inline comments in tests**
 Test method names must be descriptive enough to need no explanation. Do not add `//` comments inside or between test
 methods. Javadoc on shared helper methods is the only exception.

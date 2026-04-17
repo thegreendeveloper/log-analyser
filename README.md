@@ -69,15 +69,15 @@ mvn test
 
 Unique IP addresses: 11
 
-Top 3 most visited URLs (NOTE: tie at position 3 — more URLs share this count):
-  /docs/manage-websites/
-  /blog/category/community/
-  /blog/2018/08/survey-your-opinion-matters/
+Top 3 most visited URLs (NOTE: tie from position 2 - multiple entries share this count):
+  1. /docs/manage-websites/ (2 visits)
+  2. / (1 visit)
+  3. /asset.css (1 visit)
 
-Top 3 most active IP addresses (NOTE: tie at position 3 — more IPs share this count):
-  168.41.191.40
-  50.112.00.11
-  72.44.32.10
+Top 3 most active IP addresses (NOTE: tie from position 2 - multiple entries share this count):
+  1. 168.41.191.40 (4 requests)
+  2. 177.71.128.21 (3 requests)
+  3. 50.112.00.11 (3 requests)
 ```
 
 Warnings (malformed lines, invalid IP addresses) are written to **stderr**, keeping stdout clean for piping or
