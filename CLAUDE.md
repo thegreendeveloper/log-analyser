@@ -167,6 +167,13 @@ LogAnalyser analyser = new DefaultLogAnalyser(err);
 
 - **Query string stripping**: `indexOf('?')` in `DefaultLogAnalyser` — no URL parsing library. Stripping happens at
   analysis time, not parse time, so the raw URL is preserved in `LogEntry`.
+- **Case-insensitive URL matching**: URLs are lower-cased after query string stripping, so `/Search?q=foo` and
+  `/search?q=bar` both count as `/search`. `/docs/manage-websites/` and `/docs/manage-users/` are still distinct
+  (no path-prefix grouping — see below). An alternative would be to group by path prefix (e.g. both
+  count towards `/docs/`), which gives section-level traffic rather than page-level traffic. This was considered and
+  rejected because the correct normalisation depth is ambiguous without knowledge of the site structure, and exact URLs
+  are the standard in web server log analysis. If prefix grouping is needed it should be a configurable option, not the
+  default.
 - **Tie detection**: compares the count at index `TOP_N - 1` with index `TOP_N` in the sorted list. Uses the `TOP_N`
   constant throughout — no magic numbers.
 - **Deterministic sort**: `DefaultLogAnalyser.sortDescending` applies a secondary sort by key (ascending) so entries

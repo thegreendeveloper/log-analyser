@@ -100,7 +100,12 @@ Lines that do not match this structure are skipped with a warning on stderr.
 ### URL handling
 
 - **Query strings are stripped** before comparison: `/search?q=foo` and `/search?q=bar` both count as `/search`.
-- No other normalisation is applied — URLs are compared exactly as they appear.
+- **URL matching is case-insensitive** — `/Docs/Page/` and `/docs/page/` count as the same URL. The normalised form (
+  lowercase) is what appears in the output.
+- **Path-level grouping is not applied** — `/docs/manage-websites/` and `/docs/manage-users/` are counted as separate
+  entries. Grouping by path prefix (e.g. both counting towards `/docs/`) would give section-level traffic statistics but
+  requires knowledge of the site structure to choose the right depth. Exact URL matching (after normalisation) is the
+  standard approach in web server log analysis.
 - Absolute URLs (`http://example.net/path/`) and relative URLs (`/path/`) are treated as **distinct**.
 
 ### Status codes
@@ -123,3 +128,22 @@ the 4th entry has the same count as the 3rd.
 
 - The log file path is provided as a command-line argument.
 - A clear error message is printed to stderr if the argument is missing or the file does not exist.
+
+---
+
+## Use of AI
+
+This solution was developed with the assistance of Claude (Anthropic) as an AI pair programmer, in line with the
+encouragement in the task brief.
+
+AI was used for:
+
+- Scaffolding the initial project structure and Maven configuration
+- Generating boilerplate (records, interfaces, test setup)
+- Suggesting implementation patterns (Pure DI, stream pipelines, Mockito test structure)
+- Iterating on design decisions through discussion (e.g. `RankedList` vs separate booleans, tie position reporting,
+  case-insensitive URL matching)
+
+All design decisions were made and validated by me. I can walk through every line of code, explain the reasoning behind
+each architectural choice, and discuss the trade-offs considered. The AI accelerated the implementation; the thinking
+behind it is mine.

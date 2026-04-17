@@ -18,10 +18,10 @@ import java.util.stream.IntStream;
 /**
  * Default implementation of {@link LogAnalyser}.
  *
- * <p><b>URL handling:</b> query strings (everything from {@code ?} onwards) are
- * stripped before counting, so {@code /search?q=foo} and {@code /search?q=bar}
- * both count as {@code /search}. No other normalisation is applied — absolute and
- * relative URLs are treated as distinct, and case is preserved.
+ * <p><b>URL handling:</b> URLs are normalised before counting: query strings
+ * (everything from {@code ?} onwards) are stripped, and the result is lower-cased.
+ * So {@code /Search?q=foo} and {@code /search?q=bar} both count as {@code /search}.
+ * Absolute and relative URLs are still treated as distinct.
  *
  * <p><b>Tie handling:</b> exactly {@code TOP_N} entries are returned. If an entry
  * outside the top N shares the same count as the last-ranked entry, the corresponding
@@ -50,6 +50,10 @@ public class DefaultLogAnalyser implements LogAnalyser {
     private static Map<String, Long> countBy(List<LogEntry> entries, Function<LogEntry, String> keyExtractor) {
         return entries.stream()
                 .collect(Collectors.groupingBy(keyExtractor, Collectors.counting()));
+    }
+
+    private static String normaliseUrl(LogEntry entry) {
+        return stripQueryString(entry.url()).toLowerCase();
     }
 
     private static String stripQueryString(String url) {
@@ -98,7 +102,7 @@ public class DefaultLogAnalyser implements LogAnalyser {
     @Override
     public AnalysisResult analyse(List<LogEntry> entries) {
         Map<String, Long> ipCounts = countBy(entries, LogEntry::ipAddress);
-        Map<String, Long> urlCounts = countBy(entries, entry -> stripQueryString(entry.url()));
+        Map<String, Long> urlCounts = countBy(entries, DefaultLogAnalyser::normaliseUrl);
 
         warnInvalidIps(ipCounts.keySet());
 
