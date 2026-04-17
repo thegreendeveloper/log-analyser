@@ -2,6 +2,7 @@ package com.loganalyser;
 
 import com.loganalyser.analyser.LogAnalyser;
 import com.loganalyser.analyser.impl.DefaultLogAnalyser;
+import com.loganalyser.model.AnalysisResult;
 import com.loganalyser.model.LogEntry;
 import com.loganalyser.output.ResultPrinter;
 import com.loganalyser.parser.LogFileReader;
@@ -56,7 +57,8 @@ public class LogAnalyserCli {
             return 1;
         }
 
-        printer.print(analyser.analyse(entries.get()));
+        AnalysisResult analyse = analyser.analyse(entries.get());
+        printer.print(analyse);
         return 0;
     }
 

@@ -6,6 +6,8 @@ package com.loganalyser;
 public class Main {
 
     public static void main(String[] args) {
-        System.exit(new LogAnalyserCli(System.out, System.err).run(args));
+        LogAnalyserCli logAnalyserCli = new LogAnalyserCli(System.out, System.err);
+        int run = logAnalyserCli.run(args);
+        System.exit(run);
     }
 }
