@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Implementation of {@link LogFileReader} that streams the file line by line.
@@ -39,12 +40,16 @@ public class StreamingLogFileReader implements LogFileReader {
     @Override
     public List<LogEntry> readEntries(Path path) throws IOException {
         try (var lines = Files.lines(path)) {
-            return lines
-                    .map(this::parseWithWarning)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .toList();
+            return parseAll(lines);
         }
+    }
+
+    private List<LogEntry> parseAll(Stream<String> lines) {
+        return lines
+                .map(this::parseWithWarning)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 
     private Optional<LogEntry> parseWithWarning(String line) {

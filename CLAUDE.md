@@ -85,6 +85,12 @@ a well-named method instead.
 If a loop body does more than one thing, or if naming what it does would add clarity, extract it. The method name
 becomes the documentation.
 
+**Extract stream operations into named methods**
+Every non-trivial stream pipeline must be extracted into a private method whose name describes what it produces, not
+how it produces it. A method named `countBy`, `sortDescending`, or `topRanked` is self-documenting; an inline chain
+of `groupingBy`, `sorted`, and `limit` calls is not. The rule applies to lambdas too: if a lambda body is more than
+a single expression, extract it into a named method and pass a method reference instead.
+
 **No inline comments in tests**
 Test method names must be descriptive enough to need no explanation. Do not add `//` comments inside or between test
 methods. Javadoc on shared helper methods is the only exception.
@@ -161,6 +167,13 @@ LogAnalyser analyser = new DefaultLogAnalyser(err);
 
 - **Query string stripping**: `indexOf('?')` in `DefaultLogAnalyser` — no URL parsing library. Stripping happens at
   analysis time, not parse time, so the raw URL is preserved in `LogEntry`.
+- **Case-insensitive URL matching**: URLs are lower-cased after query string stripping, so `/Search?q=foo` and
+  `/search?q=bar` both count as `/search`. `/docs/manage-websites/` and `/docs/manage-users/` are still distinct
+  (no path-prefix grouping — see below). An alternative would be to group by path prefix (e.g. both
+  count towards `/docs/`), which gives section-level traffic rather than page-level traffic. This was considered and
+  rejected because the correct normalisation depth is ambiguous without knowledge of the site structure, and exact URLs
+  are the standard in web server log analysis. If prefix grouping is needed it should be a configurable option, not the
+  default.
 - **Tie detection**: compares the count at index `TOP_N - 1` with index `TOP_N` in the sorted list. Uses the `TOP_N`
   constant throughout — no magic numbers.
 - **Deterministic sort**: `DefaultLogAnalyser.sortDescending` applies a secondary sort by key (ascending) so entries

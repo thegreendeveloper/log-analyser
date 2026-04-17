@@ -69,6 +69,21 @@ class DefaultLogAnalyserTest {
     }
 
     @Test
+    void urlMatching_caseInsensitive() {
+        List<LogEntry> entries = List.of(
+                e("1.2.3.4", "/Docs/Page/"),
+                e("1.2.3.4", "/docs/page/"),
+                e("1.2.3.4", "/DOCS/PAGE/")
+        );
+
+        AnalysisResult result = analyser.analyse(entries);
+
+        assertEquals(1, result.topUrls().entries().size());
+        assertEquals("/docs/page/", result.topUrls().entries().get(0).value());
+        assertEquals(3L, result.topUrls().entries().get(0).count());
+    }
+
+    @Test
     void urlsWithQueryStrings_strippedBeforeComparison() {
         List<LogEntry> entries = List.of(
                 e("1.2.3.4", "/search?q=foo"),
@@ -159,6 +174,21 @@ class DefaultLogAnalyserTest {
 
         assertTrue(result.topUrls().tied());
         assertEquals(3, result.topUrls().entries().size());
+    }
+
+    @Test
+    void allUrlsHaveSameCount_tieStartsAtPositionOne() {
+        List<LogEntry> entries = List.of(
+                e("ip1", "/a"),
+                e("ip2", "/b"),
+                e("ip3", "/c"),
+                e("ip4", "/d")
+        );
+
+        AnalysisResult result = analyser.analyse(entries);
+
+        assertTrue(result.topUrls().tied());
+        assertEquals(1, result.topUrls().entries().get(0).rank());
     }
 
     @Test
@@ -270,6 +300,14 @@ class DefaultLogAnalyserTest {
         analyser.analyse(List.of(e("example.com", "/a")));
 
         verify(mockErr).println(contains("WARNING"));
+    }
+
+    @Test
+    void ipv6Address_warningEmitted() {
+        analyser.analyse(List.of(e("::1", "/a")));
+
+        verify(mockErr).println(contains("WARNING"));
+        verify(mockErr).println(contains("::1"));
     }
 
     @Test

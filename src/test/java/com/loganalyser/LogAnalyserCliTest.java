@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,6 +85,18 @@ class LogAnalyserCliTest {
         assertEquals(0, code);
         verify(mockErr).println(contains("WARNING"));
         assertTrue(outBytes.toString().contains("Unique IP addresses: 1"));
+    }
+
+    @Test
+    void allMalformedLines_returnsExitCode0_zeroIpCount() throws Exception {
+        Path logFile = tempDir.resolve("test.log");
+        Files.writeString(logFile, "not a log line\nalso not a log line\n");
+
+        int code = new LogAnalyserCli(capturedOut, mockErr).run(new String[]{logFile.toString()});
+
+        assertEquals(0, code);
+        assertTrue(outBytes.toString().contains("Unique IP addresses: 0"));
+        verify(mockErr, times(2)).println(contains("WARNING"));
     }
 
     @Test
