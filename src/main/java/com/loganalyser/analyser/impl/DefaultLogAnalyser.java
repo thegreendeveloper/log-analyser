@@ -91,6 +91,10 @@ public class DefaultLogAnalyser implements LogAnalyser {
     /**
      * Sorts a count map by value descending, then by key ascending for deterministic
      * ordering when counts are equal (important for reliable test assertions).
+     *
+     * <p>Note: keys are sorted as plain strings. IP addresses such as
+     * {@code 177.71.128.21} therefore sort before {@code 50.112.00.11} because
+     * {@code '1' < '5'} — this is lexicographic comparison, not numeric ordering.
      */
     private static List<Map.Entry<String, Long>> sortDescending(Map<String, Long> counts) {
         return counts.entrySet().stream()

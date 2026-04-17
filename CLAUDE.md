@@ -10,9 +10,9 @@ A Java 17 command-line tool that parses Apache/Nginx **Combined Log Format** HTT
 - Top 3 most visited URLs (query strings stripped before comparison)
 - Top 3 most active IP addresses
 
-Ties at position 3 are flagged explicitly. Invalid-looking IP addresses and unparseable log lines produce warnings on
-stderr. The tool is designed to handle large files (streaming, not loading into memory) and partially corrupt logs (bad
-lines are skipped, not fatal).
+Ties are flagged explicitly, including which position they start from. Invalid-looking IP addresses and unparseable log
+lines produce warnings on
+stderr. Partially corrupt logs are handled gracefully — bad lines are skipped, not fatal.
 
 This is a take-home assignment submission. The priority is readable, well-reasoned code with full test coverage — not a
 production-hardened system.
@@ -178,10 +178,11 @@ LogAnalyser analyser = new DefaultLogAnalyser(err);
   constant throughout — no magic numbers.
 - **Deterministic sort**: `DefaultLogAnalyser.sortDescending` applies a secondary sort by key (ascending) so entries
   with equal counts always appear in the same order. This makes test assertions on list equality reliable.
-- **Warning deduplication**: `warnedIps.add(ip)` in `DefaultLogAnalyser` returns `true` only on first insertion — one
-  warning per unique invalid IP regardless of how many requests it made.
+- **Warning deduplication**: `warnInvalidIps` iterates the key set of the IP count map, which already contains only
+  unique IPs — so each invalid address produces exactly one warning regardless of how many requests it made.
 - **Streaming I/O**: `StreamingLogFileReader` uses `Files.lines()` and keeps the stream open only for the duration of
-  `readEntries`. Suitable for very large log files.
+  `readEntries`. The I/O itself is lazy, but `.toList()` materialises all parsed entries in memory before analysis
+  begins — see the README for a discussion of what would need to change at very large scale.
 
 ## Testing
 
