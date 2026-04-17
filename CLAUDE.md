@@ -33,6 +33,15 @@ mvn package
 java -jar target/log-analyser-1.0.0.jar logs/sample.log
 ```
 
+## Run in IntelliJ
+
+1. **Run → Edit Configurations → + → Application**
+2. **Main class:** `com.loganalyser.Main`
+3. **Program arguments:** `logs/sample.log`
+4. **Working directory:** `$PROJECT_DIR$`
+5. **JDK:** Java 17 — verify via **File → Project Structure → Project** if the run fails with a class version error
+6. **Shift+F10** to run, **Shift+F9** to debug
+
 Tests must pass before committing. Always run `mvn test` after any change to source or test files.
 
 ## Architecture

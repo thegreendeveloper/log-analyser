@@ -29,15 +29,28 @@ This produces `target/log-analyser-1.0.0.jar`.
 
 ## Run
 
+**If you have already built the JAR:**
+
 ```bash
 java -jar target/log-analyser-1.0.0.jar logs/sample.log
 ```
 
-Or directly with Maven (no build step needed):
+**Build and run in one step (no JAR needed):**
 
 ```bash
 mvn exec:java -Dexec.mainClass=com.loganalyser.Main -Dexec.args="logs/sample.log"
 ```
+
+---
+
+## Run in IntelliJ
+
+1. Open **Run → Edit Configurations → + → Application**
+2. Set **Main class** to `com.loganalyser.Main`
+3. Set **Program arguments** to `logs/sample.log`
+4. Set **Working directory** to `$PROJECT_DIR$`
+5. Ensure the **JDK** is set to Java 17 (**File → Project Structure → Project** if not)
+6. Click **OK**, then press **Shift+F10** to run or **Shift+F9** to debug
 
 ---
 
