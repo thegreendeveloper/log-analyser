@@ -39,6 +39,7 @@ public class StreamingLogFileReader implements LogFileReader {
 
     @Override
     public List<LogEntry> readEntries(Path path) throws IOException {
+        //Lazy reading of lines - does not load everything into memory
         try (var lines = Files.lines(path)) {
             return parseAll(lines);
         }
@@ -49,7 +50,7 @@ public class StreamingLogFileReader implements LogFileReader {
                 .map(this::parseWithWarning)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .toList();
+                .toList(); //This line is troublesome for larger files. It loads all lines into memory. Returning Stream<LogEntry> would avoid that.
     }
 
     private Optional<LogEntry> parseWithWarning(String line) {
