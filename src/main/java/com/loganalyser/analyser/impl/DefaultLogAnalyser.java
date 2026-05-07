@@ -81,6 +81,7 @@ public class DefaultLogAnalyser implements LogAnalyser {
      * Returns true if the entry immediately outside the top {@code topN} shares
      * the same count as the last entry inside it — i.e. the cut-off is ambiguous.
      */
+    //HasTie has a bug here. It can return false in cases were rank 1 ties.
     private static boolean hasTie(List<Map.Entry<String, Long>> sorted, int topN) {
         if (sorted.size() <= topN) {
             return false;
@@ -110,6 +111,7 @@ public class DefaultLogAnalyser implements LogAnalyser {
 
         warnInvalidIps(ipCounts.keySet());
 
+        //Instead of sorting we could have used a priority queue of size N. We then avoid sorting the entire list and save computation time
         List<Map.Entry<String, Long>> sortedUrls = sortDescending(urlCounts);
         List<Map.Entry<String, Long>> sortedIps = sortDescending(ipCounts);
 

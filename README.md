@@ -10,6 +10,46 @@ Ties are called out in the output, including which position they start from.
 
 ---
 
+## Architecture decisions
+
+**Package-based separation of concerns (`parser` / `analyser` / `model` / `output`)**
+Code is split by responsibility into packages so each part can be tested
+independently and reasoned about in isolation. The analyser doesn't know
+where entries come from; the printer doesn't know how the analysis ran.
+The boundaries are convention, not enforced — there are no separate
+Maven modules, so nothing stops a class in `output` from importing one
+from `parser`. For a project this size that tradeoff is fine; if it grew,
+splitting into modules would be the next step.
+
+**Streaming reader for memory efficiency**
+Logs are read line-by-line via `Files.lines()` rather than loaded whole.
+Keeps the I/O layer memory-bounded regardless of file size. The reader
+currently materialises parsed entries into a list before analysis — see
+"What would break with very large files" below for the next step.
+
+**Injected `PrintStream` in `ResultPrinter`**
+The output stream is constructor-injected rather than hard-coded to
+`System.out`, so tests can capture output without touching global state.
+Same pattern works for redirecting to files or other streams later.
+
+**Skip malformed lines with a warning, don't fail the run**
+A single bad line in a log file shouldn't abort analysis of the other
+million good lines. Malformed entries and invalid IPs are logged to
+stderr and skipped; stdout stays clean for piping.
+
+**`RankedList` and `RankedEntry` as dedicated model types**
+Top-N results carry rank, count, and tie information as first-class
+data rather than being implicit in list ordering. Lets the printer
+render tie notes accurately and keeps the analyser's contract explicit.
+
+**Standard library only, no runtime dependencies**
+Parsing, counting, and formatting are all done with `java.util` and
+`java.util.stream`. The only dependencies are JUnit and Mockito at test
+scope. Keeps the build small, the dependency surface zero, and the code
+portable.
+
+---
+
 ## Requirements
 
 - Java 17+

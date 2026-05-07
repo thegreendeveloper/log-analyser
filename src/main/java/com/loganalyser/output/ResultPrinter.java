@@ -34,6 +34,7 @@ public class ResultPrinter {
         printRankedList("Top 3 most active IP addresses", result.mostActiveIpAddresses(), "request", "requests");
     }
 
+    //There is a bit of architecture smell here - as these methods assume that our ranked entry is sorted.
     private static String tieNote(List<RankedEntry> entries) {
         long lastCount = entries.get(entries.size() - 1).count();
         int tieStartRank = firstRankWithCount(entries, lastCount);
